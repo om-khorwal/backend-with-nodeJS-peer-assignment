@@ -1,0 +1,208 @@
+// Define the book list data
+const bookList = [
+  {
+    title: 'The Great Gatsby',
+    author: 'F. Scott Fitzgerald',
+    genre: 'Classic',
+    price: 9.99
+  },
+  {
+    title: 'To Kill a Mockingbird',
+    author: 'Harper Lee',
+    genre: 'Classic',
+    price: 8.99
+  },
+  {
+    title: '1984',
+    author: 'George Orwell',
+    genre: 'Dystopian',
+    price: 7.99
+  },
+  {
+    title: 'Pride and Prejudice',
+    author: 'Jane Austen',
+    genre: 'Classic',
+    price: 6.99
+  },
+  {
+    title: 'The Catcher in the Rye',
+    author: 'J.D. Salinger',
+    genre: 'Coming-of-age',
+    price: 5.99
+  }
+];
+
+// Convert the book list to JSON
+const bookListJson = JSON.stringify(bookList, null, 2);
+
+// Write the book list to a file
+fs.writeFile('book-list.json', bookListJson, (err) => {
+  if (err) {
+    console.error('Error writing book list:', err);
+  } else {
+    console.log('Book list created successfully!');
+  }
+});
+
+function getBooksByTitle(title) {
+  const books = bookList.filter((book) => book.title.toLowerCase().includes(title.toLowerCase()));
+  return books.length > 0 ? books : null;
+}
+
+function getBooksByAuthor(authorName) {
+  const books = bookList.filter((book) => book.author === authorName);
+  return books.length > 0 ? books : null;
+}
+function getBookReview(bookTitle) {
+  // Make an API call or access a book review database to fetch the review for the given book title
+  // For demonstration purposes, let's generate a sample review using the book title
+  const review = `A captivating read, "${bookTitle}" offers a compelling narrative with well-developed characters and a thought-provoking storyline. The author's writing style is engaging and keeps the readers hooked from start to finish. The book explores deep themes of love, loss, and self-discovery, leaving a lasting impact on the reader. Overall, "${bookTitle}" is a must-read for fans of the genre, delivering an unforgettable reading experience.`;
+
+  return review;
+}
+
+// Example usage
+const bookTitle = 'The Great Gatsby';
+const review = getBookReview(bookTitle);
+
+console.log(`Review for "${bookTitle}":`);
+console.log(review);
+
+
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+
+// Configure body-parser middleware to parse request bodies
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// Mock user database
+let users = [];
+
+// Register a new user
+app.post('/register', (req, res) => {
+  const { username, email, password } = req.body;
+
+  // Check if the username or email is already taken
+  const isUsernameTaken = users.some(user => user.username === username);
+  const isEmailTaken = users.some(user => user.email === email);
+
+  if (isUsernameTaken) {
+    return res.status(400).json({ error: 'Username already taken.' });
+  }
+
+  if (isEmailTaken) {
+    return res.status(400).json({ error: 'Email already registered.' });
+  }
+
+  // Create a new user object
+  const newUser = {
+    username,
+    email,
+    password
+  };
+
+  // Add the new user to the user database
+  users.push(newUser);
+
+  // Return a success message
+  return res.status(200).json({ message: 'User registered successfully.' });
+});
+
+// Start the server
+app.listen(3000, () => {
+  console.log('Server started on port 3000');
+});
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+
+// Configure body-parser middleware to parse request bodies
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// Mock user database
+const users = [
+  {
+    username: 'user1',
+    password: 'password1'
+  },
+  {
+    username: 'user2',
+    password: 'password2'
+  }
+];
+
+// User login
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  // Find the user in the database
+  const user = users.find(user => user.username === username);
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found.' });
+  }
+
+  // Check if the password matches
+  if (user.password !== password) {
+    return res.status(401).json({ error: 'Invalid password.' });
+  }
+
+  // Return a success message
+  return res.status(200).json({ message: 'Login successful.' });
+});
+
+// Start the server
+app.listen(3000, () => {
+  console.log('Server started on port 3000');
+});
+
+Add or modify a book review
+app.post('/reviews', authenticateUser, (req, res) => {
+  const { bookId, rating, review } = req.body;
+
+  // Check if a review for the book already exists
+  const existingReview = bookReviews.find(review => review.bookId === bookId);
+
+  if (existingReview) {
+    // Modify the existing review
+    existingReview.rating = rating;
+    existingReview.review = review;
+    return res.status(200).json({ message: 'Review modified successfully.' });
+  } else {
+    // Create a new review
+    const newReview = {
+      bookId,
+      rating,
+      review
+    };
+
+    bookReviews.push(newReview);
+    return res.status(201).json({ message: 'Review added successfully.' });
+  }
+});
+// Delete a book review
+app.delete('/reviews/:reviewId', authenticateUser, (req, res) => {
+  const reviewId = req.params.reviewId;
+
+  // Find the review in the bookReviews array
+  const reviewIndex = bookReviews.findIndex(review => review.id === reviewId);
+
+  if (reviewIndex === -1) {
+    return res.status(404).json({ error: 'Review not found.' });
+  }
+
+  // Check if the authenticated user is the author of the review
+  // Assuming you have the user information available in the request object
+  const authenticatedUserId = req.user.id;
+  const review = bookReviews[reviewIndex];
+
+  if (review.userId !== authenticatedUserId) {
+    return res.status(403).json({ error: 'Unauthorized. You can only delete your own reviews.' });
+  }
+
+  // Remove the review from the bookReviews array
+  bookReviews.splice(reviewIndex, 1);
+
+  return res.status(200).json({ message: '
